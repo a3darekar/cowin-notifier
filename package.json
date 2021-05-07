@@ -1,0 +1,35 @@
+{
+  "name": "cowin-notifier",
+  "version": "1.0.0",
+  "description": "IFTTT Notifier for cowin vaccination slot availability",
+  "main": "app.js",
+  "scripts": {
+    "notifier": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/a3darekar/cowin-notifier.git"
+  },
+  "author": "a3darekar",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/a3darekar/cowin-notifier/issues"
+  },
+  "keywords": [
+    "cowin",
+    "covid",
+    "vaccine",
+    "notification",
+    "notifier",
+    "automation",
+    "script",
+    "ifttt"
+  ],
+  "homepage": "https://github.com/a3darekar/cowin-notifier#readme",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}
