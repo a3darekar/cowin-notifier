@@ -38,7 +38,7 @@ function getParameters() {
 		// date.setDate(date.getDate() + 1);
 		let url = ""
 		if (args.searchByDistrict == "TRUE") {
-			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=" + args.districtCode + "&date=" + date
+			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=" + args.districtcode + "&date=" + date
 		} else {
 			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode=" + args.pincode + "&date=" + date 
 		}
@@ -87,7 +87,9 @@ function notify(notifier, key, message) {
 	if (notifier && key) {
 		axios.post("https://maker.ifttt.com/trigger/" + notifier + "/with/key/" + key, { value1: message }).then(() => {
 			console.log("Sent Notification to Phone");
-		}).catch((err) => {console.error(err)});
+		}).catch((err) => {
+			console.log("Error: " + err.message);
+		});
 	} else {
 		console.log("Slots found");
 	}
