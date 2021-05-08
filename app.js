@@ -5,6 +5,8 @@ const dateformat = require("dateformat");
 dotenv.config();
 let args = process.env;
 const interval = process.env.interval;
+const baseURL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions"
+//  "/calendarByPin?pincode=" + pincode + "&date=" + date
 
 function getParameters() {
 	if (args.help){
@@ -22,46 +24,59 @@ function getParameters() {
 		console.error("Please provide valid minimum age key in .env file to recieve proper alerts");
 		console.error("Visit https://github.com/a3darekar/cowin-notifier#readme for documentation.");
 		return;
-	} else if(!args.pincode) {
+	} else if(args.searchByDistrict == "TRUE" && !args.districtCode) {
+		console.error("Please provide required District Code in .env file as => districtCode=<XXX> \nRefer documentation for respective District Code values");
+		console.error("Visit https://github.com/a3darekar/cowin-notifier#readme for documentation.");
+		return;
+	} else if(args.searchByDistrict == "FALSE" && !args.pincode) {
 		console.error("Please provide required PIN code  in .env file as => pincode=<6-DIGIT-PINCODE> \nRefer documentation for more details");
 		console.error("Visit https://github.com/a3darekar/cowin-notifier#readme for documentation.");
 		return;
 	} else {
 		let date = new Date()
-		date.setDate(date.getDate() + 1);
+		date = dateformat(date, "dd-mm-yyyy")
+		// date.setDate(date.getDate() + 1);
+		let url = ""
+		if (args.searchByDistrict == "TRUE") {
+			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=" + args.districtCode + "&date=" + date
+		} else {
+			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode=" + args.pincode + "&date=" + date 
+		}
 		const parameters = {
+			searchByDistrict: args.searchByDistrict,
 			notifier: args.notifier,
 			key: args.key,
 			age: args.age,
-			pincode: args.pincode,
-			date: dateformat(date, "dd-mm-yyyy")
+			url: url
 		}
-		console.log(parameters);
+		console.log("All inputs seem valid. Initiating the notifier loop");
 		runloop(parameters);
 	}
 }
 
-function ping({notifier, key, age, pincode, date}) {
+function ping({url, notifier, key, age}) {
 	axios.get(
-			"https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode=" + pincode + "&date=" + date, 
+			url, 
 			{headers: {"User-Agent": userAgent}}
 	).then(
 		(result) => {
 			const { centers } = result.data;
-			console.log(centers);
-			let slotInfo = "";
+			let notifierFlag = false;
 			let appointmentsAvailableCount = 0;
 			if (centers.length) {
 				centers.forEach(center => {
 					center.sessions.forEach((session => {
 						if (session.min_age_limit <= +age && session.available_capacity > 0) {
 							let message = session.available_capacity + " slots is/are available: " + center.name + " on " + session.date;
+							console.log(message);
+							notifierFlag = true;
 							notify(notifier, key, message);
-						}else{
-							console.error("no slots");
 						}
-					}))
+					}));
 				});
+			}
+			if (!notifierFlag) {
+				console.error("No slots found");
 			}
 		}).catch((err) => {
 			console.log("Error: " + err.message);
@@ -75,7 +90,6 @@ function notify(notifier, key, message) {
 		}).catch((err) => {console.error(err)});
 	} else {
 		console.log("Slots found");
-		console.log(slotInfo);
 	}
 }
 
@@ -83,9 +97,9 @@ function runloop(parameters){
 	let pingCount = 0;
 	timer = setInterval(() => {
 		pingCount += 1;
-		console.log("Ping Count - ", pingCount);
+		console.log("\n\nChecking COWIN site for available slot at " + dateformat(Date.now(), "HH:MM") + " - Ping No. #" + pingCount);
 		ping(parameters);
-	}, interval * 6000);
+	}, interval * 60000);
 }
 
 getParameters();
