@@ -24,8 +24,8 @@ function getParameters() {
 		console.error("Please provide valid minimum age key in .env file to recieve proper alerts");
 		console.error("Visit https://github.com/a3darekar/cowin-notifier#readme for documentation.");
 		return;
-	} else if(args.searchByDistrict == "TRUE" && !args.districtCode) {
-		console.error("Please provide required District Code in .env file as => districtCode=<XXX> \nRefer documentation for respective District Code values");
+	} else if(args.searchByDistrict == "TRUE" && !args.districtcode) {
+		console.error("Please provide required District Code in .env file as => districtcode=<XXX> \nRefer documentation for respective District Code values");
 		console.error("Visit https://github.com/a3darekar/cowin-notifier#readme for documentation.");
 		return;
 	} else if(args.searchByDistrict == "FALSE" && !args.pincode) {
@@ -50,6 +50,11 @@ function getParameters() {
 			url: url
 		}
 		console.log("All inputs seem valid. Initiating the notifier loop");
+		if (args.searchByDistrict == "TRUE") {
+			console.log("Looking for available vaccination slots in District Code: " + args.districtcode);
+		}else {
+			console.log("Looking for available vaccination slots in PIN Code: " + args.pincode);
+		}
 		runloop(parameters);
 	}
 }
