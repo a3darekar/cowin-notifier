@@ -53,7 +53,7 @@ function getParameters() {
 			key: args.key,
 			age: args.age,
 			url: url,
-			doseNo: DoseNo
+			doseNo: doseNo
 		}
 		console.log("All inputs seem valid. Initiating the notifier loop");
 		if (args.searchByDistrict == "TRUE") {
