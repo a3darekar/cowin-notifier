@@ -6,7 +6,6 @@ dotenv.config();
 let args = process.env;
 const interval = process.env.interval;
 const baseURL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions"
-//  "/calendarByPin?pincode=" + pincode + "&date=" + date
 
 function getParameters() {
 	if (args.help){
@@ -35,7 +34,6 @@ function getParameters() {
 	} else {
 		let date = new Date()
 		date = dateformat(date, "dd-mm-yyyy")
-		// date.setDate(date.getDate() + 1);
 		let url = ""
 		if (args.searchByDistrict == "TRUE") {
 			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=" + args.districtcode + "&date=" + date
