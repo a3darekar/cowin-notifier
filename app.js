@@ -42,12 +42,20 @@ function getParameters() {
 		} else {
 			url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode=" + args.pincode + "&date=" + date 
 		}
+
+		if (args.doseNo == "2") {
+			doseNo = 'available_capacity_dose2'
+		} else {
+			doseNo = 'available_capacity_dose1'
+		}
+
 		const parameters = {
 			searchByDistrict: args.searchByDistrict,
 			notifier: args.notifier,
 			key: args.key,
 			age: args.age,
 			url: url
+			doseNo: DoseNo
 		}
 		console.log("All inputs seem valid. Initiating the notifier loop");
 		if (args.searchByDistrict == "TRUE") {
@@ -59,7 +67,7 @@ function getParameters() {
 	}
 }
 
-function ping({url, notifier, key, age}) {
+function ping({url, notifier, key, age, doseNo}) {
 	axios.get(
 			url, 
 			{headers: {"User-Agent": userAgent}}
@@ -71,8 +79,8 @@ function ping({url, notifier, key, age}) {
 			if (centers.length) {
 				centers.forEach(center => {
 					center.sessions.forEach((session => {
-						if (session.min_age_limit <= +age && session.available_capacity > 0) {
-							let message = session.available_capacity + " slots is/are available: " + center.name + " on " + session.date;
+						if (session.min_age_limit <= +age && session[doseNo] > 0) {
+							let message = session[doseNo] + " slots is/are available: " + center.pincode + " - " + center.name + " on " + session.date;
 							console.log(message);
 							notifierFlag = true;
 							notify(notifier, key, message);
@@ -106,7 +114,7 @@ function runloop(parameters){
 		pingCount += 1;
 		console.log("\n\nChecking COWIN site for available slot at " + dateformat(Date.now(), "HH:MM") + " - Ping No. #" + pingCount);
 		ping(parameters);
-	}, interval * 60000);
+	}, interval * 30000);
 }
 
 getParameters();
