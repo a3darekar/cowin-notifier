@@ -52,7 +52,7 @@ function getParameters() {
 			notifier: args.notifier,
 			key: args.key,
 			age: args.age,
-			url: url
+			url: url,
 			doseNo: DoseNo
 		}
 		console.log("All inputs seem valid. Initiating the notifier loop");
