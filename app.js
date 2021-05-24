@@ -7,6 +7,10 @@ let args = process.env;
 const interval = process.env.interval;
 const baseURL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions"
 
+const desktopNotifier = require('node-notifier');
+const path = require('path');
+
+
 function getParameters() {
 	if (args.help){
 		console.error("Visit https://github.com/a3darekar/cowin-notifier#readme for documentation.");
@@ -94,7 +98,20 @@ function ping({url, notifier, key, age, doseNo}) {
 	});
 }
 
-function notify(notifier, key, message) {
+function notify(notifier, key, message) {	
+	desktopNotifier.notify(
+		{
+			title: 'Cowin Slot available!',
+			message: message,
+			icon: path.join(__dirname, 'vaccineLogo.png'),
+			sound: true,
+			wait: true
+		},
+		function (err, response, metadata) {
+
+		}
+	);
+
 	if (notifier && key) {
 		axios.post("https://maker.ifttt.com/trigger/" + notifier + "/with/key/" + key, { value1: message }).then(() => {
 			console.log("Sent Notification to Phone");
